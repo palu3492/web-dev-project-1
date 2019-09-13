@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CISC 375 - Project 1</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">CISC 375</a>
+    </nav>
+    <nav id="navigation" class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">CISC 375</a>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link" href="index.html">Gallery</a>
+                <a class="nav-item nav-link active" href="signup.html">Sign Up</a>
+                <a class="nav-item nav-link" href="members.html">Members</a>
+            </div>
+        </div>
+    </nav>
+    <div class="jumbotron text-center">
+        <h1>Become a member of CISC 375!</h1>
+        <p>Fill out the form below and sign up to the class roster for CISC 375 (Web Development).</p>
+    </div>
+    <div class="container">
+        <div class="row p-1">
+        </div>
+        <form action="/sign-up" method="POST">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-6">
+                        <label for="fname">First Name</label>
+                    </div>
+                    <div class="col-6">
+                        <label for="lname">Last Name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <input id="fname" type="text" class="form-control" placeholder="Jane">
+                    </div>
+                    <div class="col-6">
+                        <input id="lname" type="text" class="form-control" placeholder="Doe">
+                    </div>
+                </div>
+                <div class="row p-1">
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="email">Email Address</label>
+                    </div>
+                    <div class="col-3">
+                        <label for="gender">Gender</label>
+                    </div>
+                    <div class="col-3">
+                        <label for="birthday">Bithday</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <input id="email" type="email" class="form-control" placeholder="name@example.com">
+                    </div>
+                    <div class="col-3">
+                        <select id="gender" class="form-control">
+                            <option>Female</option>
+                            <option>Male</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-3">
+                        <input id="birthday" type="date" class="form-control" value="1999-01-01">
+                    </div>
+                </div>
+                <div class="row p-1">
+                </div>
+                <div class="row">
+                    <div class="col-3">
+                        <button type="submit" class="btn btn-primary">Sign Up</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+    "lee.susan@example.com": {
+        "fname": "Susan",
+        "lname": "Lee",
+        "gender": "F",
+        "birthday": "1998-05-26"
+    },
+    "johnson.lucas@example.com": {
+        "fname": "Lucas",
+        "lname": "Johnson",
+        "gender": "M",
+        "birthday": "2000-12-19"
+    },
+    "ferdinand.jose@example.com": {
+        "fname": "Jose",
+        "lname": "Ferdinand",
+        "gender": "M",
+        "birthday": "1999-01-03"
+    },
+    "muller.kay@example.com": {
+        "fname": "Kay",
+        "lname": "Muller",
+        "gender": "O",
+        "birthday": "1998-11-17"
+    },
+    "wong.jade@example.com": {
+        "fname": "Jade",
+        "lname": "Wong",
+        "gender": "F",
+        "birthday": "1999-08-12"
+    }
+}
