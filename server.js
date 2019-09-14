@@ -5,7 +5,29 @@ var path = require('path');
 var qs = require('querystring');
 
 var port = 8000;
-var public_dir = path.join(__dirname, 'public');
+var publicDirectory = path.join(__dirname, 'public');
+
+let memebersFilePath = path.join(publicDirectory, 'data/members.json');
+let memebersJson;
+fs.readFile(memebersFilePath, (err, data) => { // read data from members.json
+    if (err) {
+        console.log('Could not open or find members.json');
+        return console.log(err);
+    }else {
+        let membersFileContents = data.toString(); // get data from file and make string
+        memebersJson = JSON.parse(membersFileContents); // turn data into json (object)
+    }
+});
+
+let joinFilePath = path.join(publicDirectory, 'join.html');
+let joinFileData;
+fs.readFile(joinFilePath, (err, data) => {
+    if(err){
+        console.log('Could not find or read join.html');
+    }else{
+        joinFileData = data;
+    }
+});
 
 // Properly serve files with correct 'Content-Type' for the six file types above
 // Select proper 'Content-Type' without the use of if-else statements
@@ -29,11 +51,11 @@ const contentTypeMap = {
 */
 
 function handleGET(req, res){
-    var filename = req.url.substring(1); // remove / at beginning of filename
-    if (filename === '') {
-        filename = 'index.html'; // default page if no file requested
+    var requestedFile = req.url.substring(1); // remove / at beginning of filename
+    if (requestedFile === '') {
+        requestedFile = 'index.html'; // default page if no file requested
     }
-    var fullpath = path.join(public_dir, filename);
+    var fullpath = path.join(publicDirectory, requestedFile);
     fs.readFile(fullpath, (err, data) => {
         if (err) {
             res.writeHead(404, {'Content-Type': 'text/plain'});
@@ -41,7 +63,7 @@ function handleGET(req, res){
             res.end();
         }
         else {
-            let fileType = path.extname(filename).toLowerCase();
+            let fileType = path.extname(requestedFile).toLowerCase();
             // Select proper 'Content-Type' without the use of if-else statements
             // Properly serve files with correct 'Content-Type' for the six file types above
             let contentType = contentTypeMap[fileType];
@@ -63,8 +85,7 @@ function handlePOST(req, res){
             requestBody += chunk.toString(); // convert Buffer to string
         });
         req.on('end', () => {
-            let formData = qs.parse(requestBody);
-            //console.log(formData);
+            let formData = qs.parse(requestBody); // turn form data into object
             /*
             { fname: '',
               lname: '',
@@ -72,47 +93,38 @@ function handlePOST(req, res){
               gender: 'Female',
               birthday: '1999-01-01' }
              */
-            // open data/members.json
-            // make json
-            // add new json
-            // save file
-            let memebersFilePath = path.join(public_dir, 'data/members.json');
-            fs.readFile(memebersFilePath, (err, data) => {
-                let membersFileContents = data.toString();
-                let json = JSON.parse(membersFileContents);
-                json[formData['email']] = {
-                    'fname': formData['fname'],
-                    'lname': formData['lname'],
-                    'gender': formData['gender'].substring(0,1),
-                    'birthday': formData['birthday']
-                };
-                let writeData = JSON.stringify(json);
-                fs.writeFile(memebersFilePath, writeData, function(err) {
-                    if(err) {
-                        return console.log(err);
-                    }
-                    //console.log("The file was saved!");
-                });
+
+            // change the members json object
+            memebersJson[formData['email']] = {
+                'fname': formData['fname'],
+                'lname': formData['lname'],
+                'gender': formData['gender'].substring(0,1),
+                'birthday': formData['birthday']
+            };
+            let writeData = JSON.stringify(memebersJson); // make json object into string
+            fs.writeFile(memebersFilePath, writeData, function(err) { // update file
+                if(err) {
+                    console.log('Could not find or write to members.json');
+                    return console.log(err);
+                }
+                //console.log("members.json updated with the following: ");
+                //console.log(writeData);
             });
         });
 
         // Respond with the contents of the 'join.html' file
-        let joinFilePath = path.join(public_dir, 'join.html');
-        fs.readFile(joinFilePath, (err, data) => {
-            if (err) {
-                res.writeHead(404, {'Content-Type': 'text/plain'});
-                res.write('Could not find join.html');
-                res.end();
-            }
-            else {
-                res.writeHead(200, {'Content-Type': 'text/html'});
-                res.write(data);
-                res.end();
-            }
-        });
+        if(joinFileData){
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write(joinFileData);
+            res.end();
+        }else{
+            res.writeHead(404, {'Content-Type': 'text/plain'});
+            res.write('Could not find join.html');
+            res.end();
+        }
     }else{
         res.writeHead(404, {'Content-Type': 'text/plain'});
-        res.write('Error: post did not work');
+        res.write('Error: post request did not work');
         res.end();
     }
 }
