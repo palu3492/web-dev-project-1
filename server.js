@@ -7,6 +7,7 @@ var qs = require('querystring');
 var port = 8000;
 var publicDirectory = path.join(__dirname, 'public');
 
+// load in members.json when starting server so it can be changed when a member signs up
 let memebersFilePath = path.join(publicDirectory, 'data/members.json');
 let memebersJson;
 fs.readFile(memebersFilePath, (err, data) => { // read data from members.json
@@ -19,6 +20,7 @@ fs.readFile(memebersFilePath, (err, data) => { // read data from members.json
     }
 });
 
+// load in join.html when starting server so we don't need to do it every time it is requested
 let joinFilePath = path.join(publicDirectory, 'join.html');
 let joinFileData;
 fs.readFile(joinFilePath, (err, data) => {
