@@ -1,1 +1,62 @@
-{"lee.susan@example.com":{"fname":"Susan","lname":"Lee","gender":"F","birthday":"1998-05-26"},"johnson.lucas@example.com":{"fname":"Lucas","lname":"Johnson","gender":"M","birthday":"2000-12-19"},"ferdinand.jose@example.com":{"fname":"Jose","lname":"Ferdinand","gender":"M","birthday":"1999-01-03"},"muller.kay@example.com":{"fname":"Kay","lname":"Muller","gender":"O","birthday":"1998-11-17"},"wong.jade@example.com":{"fname":"Jade","lname":"Wong","gender":"F","birthday":"1999-08-12"},"janedoe@gmail.com":{"fname":"Jane","lname":"Doe","gender":"Male","birthday":"1999-01-20"},"":{"fname":"","lname":"","gender":"F","birthday":"1999-01-01"},"palu3492@gmail.com":{"fname":"Alex","lname":"Palumbo","gender":"O","birthday":"1999-01-01"},"itsm3@ht.co":{"fname":"heelo","lname":"world","gender":"F","birthday":"1999-12-01"}}
+{
+	"lee.susan@example.com": {
+		"fname": "Susan",
+		"lname": "Lee",
+		"gender": "F",
+		"birthday": "1998-05-26"
+	},
+	"johnson.lucas@example.com": {
+		"fname": "Lucas",
+		"lname": "Johnson",
+		"gender": "M",
+		"birthday": "2000-12-19"
+	},
+	"ferdinand.jose@example.com": {
+		"fname": "Jose",
+		"lname": "Ferdinand",
+		"gender": "M",
+		"birthday": "1999-01-03"
+	},
+	"muller.kay@example.com": {
+		"fname": "Kay",
+		"lname": "Muller",
+		"gender": "O",
+		"birthday": "1998-11-17"
+	},
+	"wong.jade@example.com": {
+		"fname": "Jade",
+		"lname": "Wong",
+		"gender": "F",
+		"birthday": "1999-08-12"
+	},
+	"janedoe@gmail.com": {
+		"fname": "Jane",
+		"lname": "Doe",
+		"gender": "Male",
+		"birthday": "1999-01-20"
+	},
+	"": {
+		"fname": "",
+		"lname": "",
+		"gender": "F",
+		"birthday": "1999-01-01"
+	},
+	"palu3492@gmail.com": {
+		"fname": "Alex",
+		"lname": "Palumbo",
+		"gender": "O",
+		"birthday": "1999-01-01"
+	},
+	"itsm3@ht.co": {
+		"fname": "heelo",
+		"lname": "world",
+		"gender": "F",
+		"birthday": "1999-12-01"
+	},
+	"dabomb61@ymail.com": {
+		"fname": "Joshh",
+		"lname": "Palumbo",
+		"gender": "M",
+		"birthday": "1999-01-01"
+	}
+}

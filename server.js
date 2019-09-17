@@ -32,8 +32,8 @@ fs.readFile(joinFilePath, (err, data) => {
 });
 
 // Properly serve files with correct 'Content-Type' for the six file types above
-// Select proper 'Content-Type' without the use of if-else statements
-// HTML, CSS, JavaScript, JSON, Jpeg, and Png files
+// Select proper 'Content-Type' without the use of if-else statements - i'm using a object so if-else aren't needed
+// HTML, CSS, JavaScript, JSON, Jpeg, and Png files - jpg too since that's what the images actually are
 const contentTypeMap = {
     '.html': 'text/html',
     '.css': 'text/css',
@@ -44,14 +44,7 @@ const contentTypeMap = {
     '.png': 'image/png',
 };
 
-/*
-/images/imagethumb09.jpg
-/images/close.png
-/images/imagefull01.jpg
-/css/style.css
-/signup.html
-*/
-
+// This function handles the incoming GET requests and returns the proper file or error to the client
 function handleGET(req, res){
     var requestedFile = req.url.substring(1); // remove / at beginning of filename
     if (requestedFile === '') {
@@ -76,6 +69,9 @@ function handleGET(req, res){
     });
 }
 
+// This function handles the incoming POST requests and returns the proper file or error to the client
+// It also reads the incoming POST data form the sign-up form and puts it into the members.json 'database'
+// Might want to break this into functions (too big)
 function handlePOST(req, res){
     let postPage = req.url;
     // Add a POST request handler for the url '/sign-up'
@@ -103,7 +99,7 @@ function handlePOST(req, res){
                 'gender': formData['gender'].substring(0,1),
                 'birthday': formData['birthday']
             };
-            let writeData = JSON.stringify(memebersJson); // make json object into string
+            let writeData = JSON.stringify(memebersJson, null, "\t"); // make json object into string
             fs.writeFile(memebersFilePath, writeData, function(err) { // update file
                 if(err) {
                     console.log('Could not find or write to members.json');
@@ -131,6 +127,8 @@ function handlePOST(req, res){
     }
 }
 
+// Function determines the type of request and calls the correct function to handle that request
+// req: request object coming from client, res: response object to return responses to the client
 function NewRequest(req, res) {
     // Properly differentiate between GET and POST requests
     if(req.method === 'GET'){
@@ -140,7 +138,8 @@ function NewRequest(req, res) {
     }
 }
 
+// holds the created server and passes a callback to handle incoming requests
 var server = http.createServer(NewRequest);
 
-console.log('Now listening on port ' + port);
+console.log('Now listening on port ' + port); // this is the port clients connect to, ip: localhost
 server.listen(port, '0.0.0.0');
