@@ -54,9 +54,15 @@
 		"birthday": "1999-12-01"
 	},
 	"dabomb61@ymail.com": {
-		"fname": "Joshh",
+		"fname": "Alex",
 		"lname": "Palumbo",
-		"gender": "M",
+		"gender": "F",
 		"birthday": "1999-01-01"
+	},
+	"Swan@gmail.com": {
+		"fname": "Bob",
+		"lname": "Swan",
+		"gender": "M",
+		"birthday": "2000-04-11"
 	}
 }

@@ -12,20 +12,21 @@ let memebersFilePath = path.join(publicDirectory, 'data/members.json');
 let memebersJson;
 fs.readFile(memebersFilePath, (err, data) => { // read data from members.json
     if (err) {
-        console.log('Could not open or find members.json');
+        console.log('Could not read or find members.json');
         return console.log(err);
     }else {
         let membersFileContents = data.toString(); // get data from file and make string
-        memebersJson = JSON.parse(membersFileContents); // turn data into json (object)
+        memebersJson = JSON.parse(membersFileContents); // turn data into object
     }
 });
 
-// load in join.html when starting server so we don't need to do it every time it is requested
+// load in join.html when starting server
 let joinFilePath = path.join(publicDirectory, 'join.html');
 let joinFileData;
 fs.readFile(joinFilePath, (err, data) => {
     if(err){
-        console.log('Could not find or read join.html');
+        console.log('Could not read or find join.html');
+        return console.log(err);
     }else{
         joinFileData = data;
     }
@@ -54,17 +55,49 @@ function handleGET(req, res){
     fs.readFile(fullpath, (err, data) => {
         if (err) {
             res.writeHead(404, {'Content-Type': 'text/plain'});
-            res.write('Oh no! Could not find file');
+            res.write('Error: ' + requestedFile + 'could not be found');
             res.end();
         }
         else {
             let fileType = path.extname(requestedFile).toLowerCase();
-            // Select proper 'Content-Type' without the use of if-else statements
             // Properly serve files with correct 'Content-Type' for the six file types above
-            let contentType = contentTypeMap[fileType];
-            res.writeHead(200, {'Content-Type': contentType});
-            res.write(data);
+            // Select proper 'Content-Type' without the use of if-else statements
+            if (fileType in contentTypeMap) {
+                let contentType = contentTypeMap[fileType];
+                res.writeHead(200, {'Content-Type': contentType});
+                res.write(data);
+            }else{
+                res.writeHead(404, {'Content-Type': 'text/plain'});
+                res.write('Error: ' + fileType + ' is an unsupported file type');
+            }
             res.end();
+        }
+    });
+}
+
+function updateMembersJson(postRequestData){
+    let signupFormData = qs.parse(postRequestData); // turn form data into object
+    /*
+    { fname: '',
+      lname: '',
+      email: '',
+      gender: 'Female',
+      birthday: '1999-01-01' }
+     */
+
+    // change the members object
+    // not reading members.json here to avoid race condition
+    memebersJson[signupFormData['email']] = {
+        'fname': signupFormData['fname'], // last name
+        'lname': signupFormData['lname'], // first name
+        'gender': signupFormData['gender'].substring(0,1), // first letter of gender
+        'birthday': signupFormData['birthday']
+    };
+    let writeData = JSON.stringify(memebersJson, null, "\t")+'\n'; // make members object into json string
+    fs.writeFile(memebersFilePath, writeData, (err) => { // update file
+        if(err) {
+            console.log('Could not find or write to members.json');
+            return console.log(err);
         }
     });
 }
@@ -78,39 +111,16 @@ function handlePOST(req, res){
     if(postPage === '/sign-up'){
         // Add uploaded data to the 'data/members.json' file
         // do this here
-        let requestBody = '';
+        let postRequestData = '';
         req.on('data', chunk => {
-            requestBody += chunk.toString(); // convert Buffer to string
+            postRequestData += chunk.toString(); // convert Buffer to string
         });
         req.on('end', () => {
-            let formData = qs.parse(requestBody); // turn form data into object
-            /*
-            { fname: '',
-              lname: '',
-              email: '',
-              gender: 'Female',
-              birthday: '1999-01-01' }
-             */
-
-            // change the members json object
-            memebersJson[formData['email']] = {
-                'fname': formData['fname'],
-                'lname': formData['lname'],
-                'gender': formData['gender'].substring(0,1),
-                'birthday': formData['birthday']
-            };
-            let writeData = JSON.stringify(memebersJson, null, "\t"); // make json object into string
-            fs.writeFile(memebersFilePath, writeData, function(err) { // update file
-                if(err) {
-                    console.log('Could not find or write to members.json');
-                    return console.log(err);
-                }
-                //console.log("members.json updated with the following: ");
-                //console.log(writeData);
-            });
+            updateMembersJson(postRequestData)
         });
 
         // Respond with the contents of the 'join.html' file
+        // this file is already read in when server starts
         if(joinFileData){
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.write(joinFileData);
@@ -122,7 +132,7 @@ function handlePOST(req, res){
         }
     }else{
         res.writeHead(404, {'Content-Type': 'text/plain'});
-        res.write('Error: post request did not work');
+        res.write('Error: server cannot handle post request to ' + req.url);
         res.end();
     }
 }
@@ -135,11 +145,15 @@ function NewRequest(req, res) {
         handleGET(req, res);
     }else if(req.method === 'POST'){
         handlePOST(req, res);
+    }else{
+        res.writeHead(404, {'Content-Type': 'text/plain'});
+        res.write('Error: ' + req.method + ' is an unsupported request method');
+        res.end();
     }
 }
 
 // holds the created server and passes a callback to handle incoming requests
 var server = http.createServer(NewRequest);
 
-console.log('Now listening on port ' + port); // this is the port clients connect to, ip: localhost
+console.log('Now listening on port ' + port); // this is the port clients connect to. ip: localhost (0.0.0.0)
 server.listen(port, '0.0.0.0');
