@@ -1,13 +1,14 @@
 // built-in Node.js modules
-var fs = require('fs');
-var http = require('http');
+var fs = require('fs'); // file system module
+var http = require('http'); // server module
 var path = require('path');
-var qs = require('querystring');
+var qs = require('querystring'); // server querying module
 
 var port = 8000;
 var publicDirectory = path.join(__dirname, 'public');
 
-// load in members.json when starting server so it can be changed when a member signs up
+// read members.json and store in object when starting server so it doesn't need to be read every time a client signs up
+// prevents race condition because server is updating existing object instead of reading json and creating new object
 let memebersFilePath = path.join(publicDirectory, 'data/members.json');
 let memebersJson;
 fs.readFile(memebersFilePath, (err, data) => { // read data from members.json
@@ -20,7 +21,7 @@ fs.readFile(memebersFilePath, (err, data) => { // read data from members.json
     }
 });
 
-// load in join.html when starting server
+// read join.html and store contents when starting server
 let joinFilePath = path.join(publicDirectory, 'join.html');
 let joinFileData;
 fs.readFile(joinFilePath, (err, data) => {
@@ -61,6 +62,7 @@ function handleGET(req, res){
         else {
             let fileType = path.extname(requestedFile).toLowerCase();
             // Properly serve files with correct 'Content-Type' for the six file types above
+            // HTML, CSS, JavaScript, JSON, Jpeg, and Png files
             // Select proper 'Content-Type' without the use of if-else statements
             if (fileType in contentTypeMap) {
                 let contentType = contentTypeMap[fileType];
@@ -70,52 +72,48 @@ function handleGET(req, res){
                 res.writeHead(404, {'Content-Type': 'text/plain'});
                 res.write('Error: ' + fileType + ' is an unsupported file type');
             }
-            res.end();
         }
     });
 }
 
-function updateMembersJson(postRequestData){
+// Inserts sign-up form data into members object
+function updateMembersJson(postRequestData) {
     let signupFormData = qs.parse(postRequestData); // turn form data into object
-    /*
-    { fname: '',
-      lname: '',
-      email: '',
-      gender: 'Female',
-      birthday: '1999-01-01' }
-     */
-
     // change the members object
     // not reading members.json here to avoid race condition
-    memebersJson[signupFormData['email']] = {
-        'fname': signupFormData['fname'], // last name
-        'lname': signupFormData['lname'], // first name
-        'gender': signupFormData['gender'].substring(0,1), // first letter of gender
-        'birthday': signupFormData['birthday']
-    };
-    let writeData = JSON.stringify(memebersJson, null, "\t")+'\n'; // make members object into json string
-    fs.writeFile(memebersFilePath, writeData, (err) => { // update file
-        if(err) {
-            console.log('Could not find or write to members.json');
-            return console.log(err);
-        }
-    });
+    // make sure the form data has all required fields
+    if ('email' in signupFormData && 'fname' in signupFormData && 'lname' in signupFormData && 'gender' in signupFormData && 'birthday' in signupFormData) {
+        memebersJson[signupFormData['email']] = {
+            'fname': signupFormData['fname'], // last name
+            'lname': signupFormData['lname'], // first name
+            'gender': signupFormData['gender'].substring(0, 1), // first letter of gender
+            'birthday': signupFormData['birthday']
+        };
+        let writeData = JSON.stringify(memebersJson, null, "  ") + '\n'; // make members object into json string
+        fs.writeFile(memebersFilePath, writeData, (err) => { // update file. Avoids race condition, won't overwrite
+            if (err) {
+                console.log('Could not find or write to members.json');
+                return console.log(err);
+            }
+        });
+    } else {
+        console.log('sign-up form data not found');
+    }
 }
 
 // This function handles the incoming POST requests and returns the proper file or error to the client
-// It also reads the incoming POST data form the sign-up form and puts it into the members.json 'database'
-// Might want to break this into functions (too big)
+// It also reads the incoming POST data from the sign-up form and puts it into the members.json 'database'
 function handlePOST(req, res){
     let postPage = req.url;
-    // Add a POST request handler for the url '/sign-up'
+    // POST request handler for the url '/sign-up'
     if(postPage === '/sign-up'){
-        // Add uploaded data to the 'data/members.json' file
-        // do this here
+        // Receive streamed POST data
         let postRequestData = '';
         req.on('data', chunk => {
             postRequestData += chunk.toString(); // convert Buffer to string
         });
         req.on('end', () => {
+            // Add uploaded data to the 'data/members.json' file
             updateMembersJson(postRequestData)
         });
 
@@ -124,21 +122,18 @@ function handlePOST(req, res){
         if(joinFileData){
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.write(joinFileData);
-            res.end();
         }else{
             res.writeHead(404, {'Content-Type': 'text/plain'});
             res.write('Could not find join.html');
-            res.end();
         }
     }else{
         res.writeHead(404, {'Content-Type': 'text/plain'});
         res.write('Error: server cannot handle post request to ' + req.url);
-        res.end();
     }
 }
 
 // Function determines the type of request and calls the correct function to handle that request
-// req: request object coming from client, res: response object to return responses to the client
+// req: request object with info from client, res: response object to return responses to the client
 function NewRequest(req, res) {
     // Properly differentiate between GET and POST requests
     if(req.method === 'GET'){
@@ -148,12 +143,12 @@ function NewRequest(req, res) {
     }else{
         res.writeHead(404, {'Content-Type': 'text/plain'});
         res.write('Error: ' + req.method + ' is an unsupported request method');
-        res.end();
     }
+    res.end();
 }
 
 // holds the created server and passes a callback to handle incoming requests
 var server = http.createServer(NewRequest);
 
-console.log('Now listening on port ' + port); // this is the port clients connect to. ip: localhost (0.0.0.0)
+console.log('Now listening on port ' + port);
 server.listen(port, '0.0.0.0');
