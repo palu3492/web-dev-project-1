@@ -1,0 +1,32 @@
+Project 1 - Static Web Server
+
+Static Web Server (30 pts)
+To earn 22/30 points (grade: C)
++ Properly serve files with correct 'Content-Type' for the six file types above
++ Properly differentiate between GET and POST requests
++ Add a POST request handler for the url '/sign-up'
++ Add uploaded data to the 'data/members.json' file
++ Respond with the contents of the 'join.html' file
+
+Earn 4 additional points for each item completed below
++ Select proper 'Content-Type' without the use of if-else statements
++ Avoid potential race condition when two clients sign up (POST to '/sign-up') at the same time
+
+------------------
+Rubric Checklist:
+------------------
+22/30 points:
+My server properly serves HTML, CSS, JavaScript, JSON, Jpeg, and Png files.
+It also properly differentiates between GET and POST requests and handles them differently depending on the request method.
+GET requests are returned with the requested file's contents along with the correct Content-Type.
+POST requests are handled by parsing the data sent with the request and correctly adding those fields to a new member in 'data/members.json', if the request url is '/sign-up'.
+After adding a new member on a POST request, the server will respond with 'join.html'.
+
+Additional 8 points, 30/30 points:
+I select the correct Content-Type without if-else statements by using an object that maps file extensions as keys to Content-Types as values.
+Example: contentTypeMap = { '.html': 'text/html', '.css': 'text/css' };
+To avoid a potential race condition when two clients sign up at the same time, I read the 'members.json' file in when the server starts instead of reading that file every time a user signs up.
+By reading the file at start up and making it an object, the server will always work off the same members object and won't create different versions of the members object that can be overwritten.
+
+Expected score: 30/30
+Preferred score: 35/30

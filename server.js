@@ -7,8 +7,8 @@ var qs = require('querystring'); // server querying module
 var port = 8000;
 var publicDirectory = path.join(__dirname, 'public');
 
-// read members.json and store in object when starting server so it doesn't need to be read every time a client signs up
-// prevents race condition because server is updating existing object instead of reading json and creating new object
+// Read members.json and store in object when starting server so it doesn't need to be read every time a client signs up
+// Prevents race condition because server is updating existing object instead of reading json and creating new object
 let memebersFilePath = path.join(publicDirectory, 'data/members.json');
 let memebersJson;
 fs.readFile(memebersFilePath, (err, data) => { // read data from members.json
@@ -21,7 +21,7 @@ fs.readFile(memebersFilePath, (err, data) => { // read data from members.json
     }
 });
 
-// read join.html and store contents when starting server
+// Read join.html and store contents when starting server
 let joinFilePath = path.join(publicDirectory, 'join.html');
 let joinFileData;
 fs.readFile(joinFilePath, (err, data) => {
@@ -46,7 +46,7 @@ const contentTypeMap = {
     '.png': 'image/png',
 };
 
-// This function handles the incoming GET requests and returns the proper file or error to the client
+// Handles the incoming GET requests and returns the proper file or error to the client
 function handleGET(req, res){
     var requestedFile = req.url.substring(1); // remove / at beginning of filename
     if (requestedFile === '') {
@@ -60,17 +60,17 @@ function handleGET(req, res){
             res.end();
         }
         else {
-            let fileType = path.extname(requestedFile).toLowerCase();
+            let fileExtension = path.extname(requestedFile).toLowerCase();
             // Properly serve files with correct 'Content-Type' for the six file types above
             // HTML, CSS, JavaScript, JSON, Jpeg, and Png files
             // Select proper 'Content-Type' without the use of if-else statements
-            if (fileType in contentTypeMap) {
-                let contentType = contentTypeMap[fileType];
+            if (fileExtension in contentTypeMap) {
+                let contentType = contentTypeMap[fileExtension];
                 res.writeHead(200, {'Content-Type': contentType});
                 res.write(data);
             }else{
                 res.writeHead(404, {'Content-Type': 'text/plain'});
-                res.write('Error: ' + fileType + ' is an unsupported file type');
+                res.write('Error: ' + fileExtension + ' is an unsupported file type');
             }
         }
     });
@@ -101,8 +101,8 @@ function updateMembersJson(postRequestData) {
     }
 }
 
-// This function handles the incoming POST requests and returns the proper file or error to the client
-// It also reads the incoming POST data from the sign-up form and puts it into the members.json 'database'
+// Handles the incoming POST requests and returns the proper file or error to the client
+// It also reads the incoming POST data from the sign-up form and puts it into members.json
 function handlePOST(req, res){
     let postPage = req.url;
     // POST request handler for the url '/sign-up'
@@ -118,7 +118,7 @@ function handlePOST(req, res){
         });
 
         // Respond with the contents of the 'join.html' file
-        // this file is already read in when server starts
+        // This file is already read in when server starts
         if(joinFileData){
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.write(joinFileData);
@@ -147,7 +147,7 @@ function NewRequest(req, res) {
     res.end();
 }
 
-// holds the created server and passes a callback to handle incoming requests
+// Holds the created server and passes a callback to handle incoming requests
 var server = http.createServer(NewRequest);
 
 console.log('Now listening on port ' + port);
