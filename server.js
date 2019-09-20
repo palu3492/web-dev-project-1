@@ -1,7 +1,7 @@
-// built-in Node.js modules
+// Built-in Node.js modules
 var fs = require('fs'); // file system module
 var http = require('http'); // server module
-var path = require('path');
+var path = require('path'); 
 var qs = require('querystring'); // server querying module
 
 var port = 8000;
@@ -57,9 +57,7 @@ function handleGET(req, res){
         if (err) {
             res.writeHead(404, {'Content-Type': 'text/plain'});
             res.write('Error: ' + requestedFile + 'could not be found');
-            res.end();
-        }
-        else {
+        }else {
             let fileExtension = path.extname(requestedFile).toLowerCase();
             // Properly serve files with correct 'Content-Type' for the six file types above
             // HTML, CSS, JavaScript, JSON, Jpeg, and Png files
@@ -73,15 +71,16 @@ function handleGET(req, res){
                 res.write('Error: ' + fileExtension + ' is an unsupported file type');
             }
         }
+		res.end();
     });
 }
 
 // Inserts sign-up form data into members object
 function updateMembersJson(postRequestData) {
     let signupFormData = qs.parse(postRequestData); // turn form data into object
-    // change the members object
-    // not reading members.json here to avoid race condition
-    // make sure the form data has all required fields
+    // Change the members object
+    // Not reading members.json here to avoid race condition
+    // Make sure the form data has all required fields
     if ('email' in signupFormData && 'fname' in signupFormData && 'lname' in signupFormData && 'gender' in signupFormData && 'birthday' in signupFormData) {
         memebersJson[signupFormData['email']] = {
             'fname': signupFormData['fname'], // last name
@@ -128,8 +127,9 @@ function handlePOST(req, res){
         }
     }else{
         res.writeHead(404, {'Content-Type': 'text/plain'});
-        res.write('Error: server cannot handle post request to ' + req.url);
+        res.write('Error: server cannot handle POST request to ' + req.url);
     }
+	res.end();
 }
 
 // Function determines the type of request and calls the correct function to handle that request
@@ -143,8 +143,8 @@ function NewRequest(req, res) {
     }else{
         res.writeHead(404, {'Content-Type': 'text/plain'});
         res.write('Error: ' + req.method + ' is an unsupported request method');
+		res.end();
     }
-    res.end();
 }
 
 // Holds the created server and passes a callback to handle incoming requests
