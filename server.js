@@ -56,7 +56,7 @@ function handleGET(req, res){
     fs.readFile(fullpath, (err, data) => {
         if (err) {
             res.writeHead(404, {'Content-Type': 'text/plain'});
-            res.write('Error: ' + requestedFile + 'could not be found');
+            res.write('Error: ' + requestedFile + ' could not be found');
         }else {
             let fileExtension = path.extname(requestedFile).toLowerCase();
             // Properly serve files with correct 'Content-Type' for the six file types above
